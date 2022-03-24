@@ -1,14 +1,16 @@
 package adapter.`in`.report
 
-import adapter.out.NumberGenerator
+import domain.generator.NumberGenerator
 import adapter.out.TestNumberHistoryRepository
+import adapter.out.TestReportHistoryRepository
+import domain.entity.ReportResult
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import kotlin.random.Random
-import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class GenerateReportTaskTest {
     private val standardOut = System.out
@@ -20,20 +22,51 @@ class GenerateReportTaskTest {
     }
 
     @Test
-    fun `display last occurrences in stdout`() {
+    fun `display correct count of total unique numbers in stdout`() {
         val numberOfItems = Random.nextInt(1, 10)
-        val uniqueNumbers = NumberGenerator.generateRandomList(numberOfItems)
-        val duplicateNumbers = NumberGenerator.generateRandomList(numberOfItems)
         val task = GenerateReportTask(
-            TestNumberHistoryRepository(uniqueNumbers, duplicateNumbers)
+            TestNumberHistoryRepository(
+                NumberGenerator.generateRandomList(numberOfItems),
+                NumberGenerator.generateRandomList(numberOfItems)
+            ),
+            TestReportHistoryRepository(null)
         )
 
         task.run()
 
-        assertEquals(
-            "Received 50 unique numbers, 2 duplicates. Unique total: $numberOfItems",
-            outputStreamCaptor.toString().trim()
+        assertTrue { outputStreamCaptor.toString().contains("Unique total: $numberOfItems") }
+    }
+
+    @Test
+    fun `display correct diff of unique numbers from last report in stdout`() {
+        val numberOfItems = 5
+        val uniqueNumbers = NumberGenerator.generateRandomList(numberOfItems)
+        val duplicateNumbers = NumberGenerator.generateRandomList(numberOfItems)
+        val reportResults = ReportResult(2, 1)
+        val task = GenerateReportTask(
+            TestNumberHistoryRepository(uniqueNumbers, duplicateNumbers),
+            TestReportHistoryRepository(reportResults)
         )
+
+        task.run()
+
+        assertTrue { outputStreamCaptor.toString().contains("3 unique numbers") }
+    }
+
+    @Test
+    fun `display correct diff of duplicate numbers from last report in stdout`() {
+        val numberOfItems = 5
+        val uniqueNumbers = NumberGenerator.generateRandomList(numberOfItems)
+        val duplicateNumbers = NumberGenerator.generateRandomList(numberOfItems)
+        val reportResults = ReportResult(2, 3)
+        val task = GenerateReportTask(
+            TestNumberHistoryRepository(uniqueNumbers, duplicateNumbers),
+            TestReportHistoryRepository(reportResults)
+        )
+
+        task.run()
+
+        assertTrue { outputStreamCaptor.toString().contains("2 duplicates") }
     }
 
     @AfterEach

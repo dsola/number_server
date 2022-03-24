@@ -1,4 +1,4 @@
-package adapter.out
+package domain.generator
 
 import kotlin.random.Random
 
