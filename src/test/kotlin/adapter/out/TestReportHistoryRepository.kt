@@ -7,4 +7,6 @@ class TestReportHistoryRepository(private val lastReportResult: ReportResult?) :
     override fun getResultsFromLastReport(): ReportResult? {
         return lastReportResult
     }
+
+    override fun saveResultFromCurrentReport(reportResult: ReportResult) {}
 }

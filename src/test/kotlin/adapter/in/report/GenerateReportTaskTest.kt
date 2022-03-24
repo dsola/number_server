@@ -1,17 +1,26 @@
 package adapter.`in`.report
 
-import domain.generator.NumberGenerator
 import adapter.out.TestNumberHistoryRepository
 import adapter.out.TestReportHistoryRepository
+import domain.contract.ReportHistoryRepository
 import domain.entity.ReportResult
+import domain.generator.NumberGenerator
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
+import io.mockk.justRun
+import io.mockk.verify
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import kotlin.random.Random
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@ExtendWith(MockKExtension::class)
 class GenerateReportTaskTest {
     private val standardOut = System.out
     private val outputStreamCaptor = ByteArrayOutputStream()
@@ -19,6 +28,29 @@ class GenerateReportTaskTest {
     @BeforeEach
     fun setUp() {
         System.setOut(PrintStream(outputStreamCaptor))
+    }
+
+    @Test
+    fun `display zero values if no numbers were introduced in stdout`() {
+        val task = GenerateReportTask(
+            TestNumberHistoryRepository(
+                listOf(),
+                listOf()
+            ),
+            TestReportHistoryRepository(null)
+        )
+
+        task.run()
+
+        assertTrue(
+            "Unique counter is wrong in stdout"
+        ) { outputStreamCaptor.toString().contains("Unique total: 0") }
+        assertTrue(
+            "Unique counter from last report is wrong in stdout"
+        ) { outputStreamCaptor.toString().contains("0 unique numbers") }
+        assertTrue(
+            "Duplicate counter from last report is wrong in stdout"
+        ) { outputStreamCaptor.toString().contains("0 duplicates") }
     }
 
     @Test
@@ -34,7 +66,9 @@ class GenerateReportTaskTest {
 
         task.run()
 
-        assertTrue { outputStreamCaptor.toString().contains("Unique total: $numberOfItems") }
+        assertTrue(
+            "Unique counter is wrong in stdout"
+        ) { outputStreamCaptor.toString().contains("Unique total: $numberOfItems") }
     }
 
     @Test
@@ -50,7 +84,9 @@ class GenerateReportTaskTest {
 
         task.run()
 
-        assertTrue { outputStreamCaptor.toString().contains("3 unique numbers") }
+        assertTrue(
+            "Unique counter from last report is wrong in stdout"
+        ) { outputStreamCaptor.toString().contains("3 unique numbers") }
     }
 
     @Test
@@ -66,7 +102,9 @@ class GenerateReportTaskTest {
 
         task.run()
 
-        assertTrue { outputStreamCaptor.toString().contains("2 duplicates") }
+        assertTrue(
+            "Duplicate counter from last report is wrong in stdout"
+        ) { outputStreamCaptor.toString().contains("2 duplicates") }
     }
 
     @Test
@@ -81,7 +119,7 @@ class GenerateReportTaskTest {
 
         task.run()
 
-        assertTrue { outputStreamCaptor.toString().contains("$numberOfItems unique numbers") }
+        assertTrue("Unique counter from last report is wrong in stdout") { outputStreamCaptor.toString().contains("$numberOfItems unique numbers") }
     }
 
     @Test
@@ -95,7 +133,29 @@ class GenerateReportTaskTest {
 
         task.run()
 
-        assertTrue { outputStreamCaptor.toString().contains("$numberOfItems duplicates") }
+        assertTrue("Duplicate counter from last report is wrong in stdout") { outputStreamCaptor.toString().contains("$numberOfItems duplicates") }
+    }
+
+    @Test
+    fun `results from current report are stored`(@MockK reportHistoryRepository: ReportHistoryRepository) {
+        val uniqueNumbers = NumberGenerator.generateRandomList(4)
+        val duplicateNumbers = NumberGenerator.generateRandomList(6)
+        val task = GenerateReportTask(
+            TestNumberHistoryRepository(uniqueNumbers, duplicateNumbers),
+            reportHistoryRepository
+        )
+        every { reportHistoryRepository.getResultsFromLastReport() } returns ReportResult(3, 3)
+        justRun { reportHistoryRepository.saveResultFromCurrentReport(any()) }
+        task.run()
+
+        verify(exactly = 1) {
+            reportHistoryRepository.saveResultFromCurrentReport(
+                withArg {
+                    assertEquals(4, it.countUniqueNumbers)
+                    assertEquals(6, it.countDuplicateNumbers)
+                }
+            )
+        }
     }
 
     @AfterEach

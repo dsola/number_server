@@ -7,4 +7,8 @@ class MemoryReportHistoryRepository : ReportHistoryRepository {
     override fun getResultsFromLastReport(): ReportResult? {
         return null
     }
+
+    override fun saveResultFromCurrentReport(reportResult: ReportResult) {
+
+    }
 }

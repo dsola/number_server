@@ -11,17 +11,18 @@ class GenerateReportTask(
 ) : TimerTask() {
 
     override fun run() {
-        val uniqueNumbersCount = numberHistoryRepository.countUniqueNumbers()
-        val duplicateNumbersCount = numberHistoryRepository.countDuplicateNumbers()
         val resultsFromLastReport = reportHistoryRepository.getResultsFromLastReport()
         val resultsFromCurrentReport = ReportResult(
-            uniqueNumbersCount,
-            duplicateNumbersCount
+            numberHistoryRepository.countUniqueNumbers(),
+            numberHistoryRepository.countDuplicateNumbers()
         )
         val uniqueNumbersSinceLastReport =
             calculateUniqueNumbersSinceLastReport(resultsFromCurrentReport, resultsFromLastReport)
         val duplicateNumbersSinceLastReport = calculateDuplicateNumbersSinceLastReport(resultsFromCurrentReport, resultsFromLastReport)
-        println("Received $uniqueNumbersSinceLastReport unique numbers, $duplicateNumbersSinceLastReport duplicates. Unique total: $uniqueNumbersCount")
+        println(
+            "Received $uniqueNumbersSinceLastReport unique numbers, $duplicateNumbersSinceLastReport duplicates. Unique total: ${resultsFromCurrentReport.countUniqueNumbers}"
+        )
+        reportHistoryRepository.saveResultFromCurrentReport(resultsFromCurrentReport)
     }
 
     private fun calculateUniqueNumbersSinceLastReport(currentReport: ReportResult, previousReport: ReportResult?): Int {
