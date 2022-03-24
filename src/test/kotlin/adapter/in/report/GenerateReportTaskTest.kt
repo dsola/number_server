@@ -69,6 +69,35 @@ class GenerateReportTaskTest {
         assertTrue { outputStreamCaptor.toString().contains("2 duplicates") }
     }
 
+    @Test
+    fun `display absolute unique counter if it is the first report in stdout`() {
+        val numberOfItems = 5
+        val uniqueNumbers = NumberGenerator.generateRandomList(numberOfItems)
+        val duplicateNumbers = NumberGenerator.generateRandomList(numberOfItems)
+        val task = GenerateReportTask(
+            TestNumberHistoryRepository(uniqueNumbers, duplicateNumbers),
+            TestReportHistoryRepository(null)
+        )
+
+        task.run()
+
+        assertTrue { outputStreamCaptor.toString().contains("$numberOfItems unique numbers") }
+    }
+
+    @Test
+    fun `display absolute duplicate counter if it is the first report in stdout`() {
+        val numberOfItems = 5
+        val duplicateNumbers = NumberGenerator.generateRandomList(numberOfItems)
+        val task = GenerateReportTask(
+            TestNumberHistoryRepository(listOf(), duplicateNumbers),
+            TestReportHistoryRepository(null)
+        )
+
+        task.run()
+
+        assertTrue { outputStreamCaptor.toString().contains("$numberOfItems duplicates") }
+    }
+
     @AfterEach
     fun tearDown() {
         System.setOut(standardOut)
