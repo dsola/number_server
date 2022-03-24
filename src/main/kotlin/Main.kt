@@ -1,5 +1,8 @@
 import adapter.`in`.report.Scheduler
+import adapter.out.MemoryNumberHistoryRepository
 
 fun main(args: Array<String>) {
-    Scheduler().execute(1)
+    Scheduler(
+        MemoryNumberHistoryRepository()
+    ).execute(1)
 }

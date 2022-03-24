@@ -1,13 +1,13 @@
 package adapter.`in`.report
 
+import domain.contract.NumberHistoryRepository
 import java.util.Timer
 
-class Scheduler() {
+class Scheduler(val numberHistoryRepository: NumberHistoryRepository) {
 
     fun execute(seconds: Long) {
-        // TODO: Check ScheduledExecutorService
         Timer().scheduleAtFixedRate(
-            GenerateReportTask(),
+            GenerateReportTask(numberHistoryRepository),
             seconds * 1000,
             seconds * 1000
         )
