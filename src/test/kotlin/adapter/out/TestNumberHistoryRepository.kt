@@ -13,4 +13,6 @@ class TestNumberHistoryRepository(
     override fun countDuplicateNumbers(): Int {
         return duplicateNumbers.count()
     }
+
+    override fun persistUniqueNumber(number: Int) {}
 }

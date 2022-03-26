@@ -10,4 +10,8 @@ class MemoryNumberHistoryRepository : NumberHistoryRepository {
     override fun countDuplicateNumbers(): Int {
         TODO("Not yet implemented")
     }
+
+    override fun persistUniqueNumber(number: Int) {
+        TODO("Not yet implemented")
+    }
 }
