@@ -14,4 +14,12 @@ class MemoryNumberHistoryRepository : NumberHistoryRepository {
     override fun persistUniqueNumber(number: Int) {
         TODO("Not yet implemented")
     }
+
+    override fun persistDuplicateNumber(number: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun isNumberAlreadyPersisted(number: Int): Boolean {
+        TODO("Not yet implemented")
+    }
 }
