@@ -1,10 +1,9 @@
 package adapter.`in`.writer
 
-import adapter.out.MemoryNumberHistoryRepository
 import java.util.LinkedList
 import java.util.Queue
 
-class NumberQueueWriter(numberHistoryRepository: MemoryNumberHistoryRepository) {
+class NumberQueueWriter(private val writeNumber: WriteNumber) {
     private val queue: Queue<Int> = LinkedList()
 
     fun writeNewNumber(number: Int) {
@@ -14,8 +13,7 @@ class NumberQueueWriter(numberHistoryRepository: MemoryNumberHistoryRepository) 
     fun startWorker() {
         while (true) {
             waitForNumber()
-            val newNumber = queue.remove()
-
+            writeNumber.write(queue.remove())
         }
     }
 
