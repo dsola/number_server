@@ -3,23 +3,36 @@ package adapter.out
 import domain.contract.NumberHistoryRepository
 
 class MemoryNumberHistoryRepository : NumberHistoryRepository {
+    private val numbersMap: MutableMap<Int, Boolean> = HashMap()
+    private var uniqueNumbers: Int = 0
+    private var duplicateNumbers: Int = 0
+
     override fun countUniqueNumbers(): Int {
-        TODO("Not yet implemented")
+        return uniqueNumbers
     }
 
     override fun countDuplicateNumbers(): Int {
-        TODO("Not yet implemented")
+        return duplicateNumbers
     }
 
-    override fun persistUniqueNumber(number: Int) {
-        TODO("Not yet implemented")
-    }
-
-    override fun persistDuplicateNumber(number: Int) {
-        TODO("Not yet implemented")
+    override fun persistNumber(number: Int) {
+        if (!isNumberAlreadyPersisted(number)) {
+            numbersMap[number] = false
+            ++uniqueNumbers
+            return
+        }
+        if (!wasAccessedBefore(number)) {
+            numbersMap[number] = true
+            ++duplicateNumbers
+            --uniqueNumbers
+        }
     }
 
     override fun isNumberAlreadyPersisted(number: Int): Boolean {
-        TODO("Not yet implemented")
+        return numbersMap.containsKey(number)
+    }
+
+    private fun wasAccessedBefore(number: Int): Boolean {
+        return numbersMap.containsKey(number) && numbersMap[number] == true
     }
 }

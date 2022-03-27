@@ -21,31 +21,12 @@ class WriteNumberTest {
         val number = NumberGenerator.generateRandomNumber()
         val writeNumber = WriteNumber(numberHistoryRepository, logRepository)
         every { numberHistoryRepository.isNumberAlreadyPersisted(number) } returns false
-        justRun { numberHistoryRepository.persistUniqueNumber(number) }
-        justRun { numberHistoryRepository.persistDuplicateNumber(number) }
+        justRun { numberHistoryRepository.persistNumber(number) }
         justRun { logRepository.writeNumberInLog(number) }
 
         writeNumber.write(number)
 
-        verify(exactly = 0) { numberHistoryRepository.persistDuplicateNumber(number) }
-        verify(exactly = 1) { numberHistoryRepository.persistUniqueNumber(number) }
-    }
-
-    @Test
-    fun `write number as duplicate if it was already in repository`(
-        @MockK numberHistoryRepository: NumberHistoryRepository,
-        @MockK logRepository: NumberLogRepository
-    ) {
-        val number = NumberGenerator.generateRandomNumber()
-        val writeNumber = WriteNumber(numberHistoryRepository, logRepository)
-        justRun { numberHistoryRepository.persistUniqueNumber(number) }
-        every { numberHistoryRepository.isNumberAlreadyPersisted(number) } returns true
-        justRun { numberHistoryRepository.persistDuplicateNumber(number) }
-
-        writeNumber.write(number)
-
-        verify(exactly = 1) { numberHistoryRepository.persistDuplicateNumber(number) }
-        verify(exactly = 0) { numberHistoryRepository.persistUniqueNumber(number) }
+        verify(exactly = 1) { numberHistoryRepository.persistNumber(number) }
     }
 
     @Test
@@ -55,10 +36,9 @@ class WriteNumberTest {
     ) {
         val number = NumberGenerator.generateRandomNumber()
         val writeNumber = WriteNumber(numberHistoryRepository, logRepository)
-        justRun { numberHistoryRepository.persistUniqueNumber(number) }
+        justRun { numberHistoryRepository.persistNumber(number) }
         every { numberHistoryRepository.isNumberAlreadyPersisted(number) } returns false
-        justRun { numberHistoryRepository.persistDuplicateNumber(number) }
-        justRun { numberHistoryRepository.persistUniqueNumber(number) }
+        justRun { numberHistoryRepository.persistNumber(number) }
         justRun { logRepository.writeNumberInLog(number) }
 
         writeNumber.write(number)
@@ -73,10 +53,9 @@ class WriteNumberTest {
     ) {
         val number = NumberGenerator.generateRandomNumber()
         val writeNumber = WriteNumber(numberHistoryRepository, logRepository)
-        justRun { numberHistoryRepository.persistUniqueNumber(number) }
+        justRun { numberHistoryRepository.persistNumber(number) }
         every { numberHistoryRepository.isNumberAlreadyPersisted(number) } returns true
-        justRun { numberHistoryRepository.persistDuplicateNumber(number) }
-        justRun { numberHistoryRepository.persistUniqueNumber(number) }
+        justRun { numberHistoryRepository.persistNumber(number) }
         justRun { logRepository.writeNumberInLog(number) }
 
         writeNumber.write(number)

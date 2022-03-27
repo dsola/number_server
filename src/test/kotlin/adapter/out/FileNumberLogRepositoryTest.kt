@@ -21,7 +21,7 @@ class FileNumberLogRepositoryTest {
     fun `write number in file provided in constructor`() {
         file.createNewFile()
         val number = NumberGenerator.generateRandomNumber()
-        val repository = FieNumberLogRepository(file)
+        val repository = FileNumberLogRepository(file)
 
         repository.writeNumberInLog(number)
 
@@ -32,7 +32,7 @@ class FileNumberLogRepositoryTest {
     fun `write multiple numbers number in file provided in constructor`() {
         val number = NumberGenerator.generateRandomNumber()
         val number2 = NumberGenerator.generateRandomNumber()
-        val repository = FieNumberLogRepository(file)
+        val repository = FileNumberLogRepository(file)
 
         repository.writeNumberInLog(number)
         repository.writeNumberInLog(number2)

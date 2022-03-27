@@ -8,11 +8,10 @@ class WriteNumber(
     private val logRepository: NumberLogRepository
 ) {
     fun write(number: Int) {
-        if (numberHistoryRepository.isNumberAlreadyPersisted(number)) {
-            numberHistoryRepository.persistDuplicateNumber(number)
+        if (!numberHistoryRepository.isNumberAlreadyPersisted(number)) {
+            logRepository.writeNumberInLog(number)
             return
         }
-        numberHistoryRepository.persistUniqueNumber(number)
-        logRepository.writeNumberInLog(number)
+        numberHistoryRepository.persistNumber(number)
     }
 }
