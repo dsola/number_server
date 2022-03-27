@@ -1,3 +1,4 @@
+import adapter.`in`.http.ConcurrentHttpServer
 import adapter.`in`.report.Scheduler
 import adapter.`in`.writer.WriteNumber
 import adapter.out.FileNumberLogRepository
@@ -5,9 +6,10 @@ import adapter.out.InMemoryNumberQueueWriter
 import adapter.out.MemoryNumberHistoryRepository
 import adapter.out.MemoryReportHistoryRepository
 import kotlinx.coroutines.DelicateCoroutinesApi
+import java.net.ServerSocket
 
 @DelicateCoroutinesApi
-fun main(args: Array<String>) {
+fun main() {
     val numberHistoryRepository = MemoryNumberHistoryRepository()
     val numberReportHistoryRepository = MemoryReportHistoryRepository()
     val logRepository = FileNumberLogRepository.generateForPath(
@@ -21,4 +23,6 @@ fun main(args: Array<String>) {
         numberReportHistoryRepository
     ).execute(10)
     queue.start(1)
+
+    ConcurrentHttpServer(queue, ServerSocket(4000)).start()
 }
