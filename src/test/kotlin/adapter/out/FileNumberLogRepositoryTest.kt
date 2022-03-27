@@ -1,5 +1,9 @@
 package adapter.out
 import generator.NumberGenerator
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -7,6 +11,7 @@ import java.io.File
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
+@ExperimentalCoroutinesApi
 class FileNumberLogRepositoryTest {
 
     private lateinit var file: File
@@ -18,8 +23,10 @@ class FileNumberLogRepositoryTest {
     }
 
     @Test
-    fun `write number in file provided in constructor`() {
-        file.createNewFile()
+    fun `write number in file provided in constructor`() = runTest {
+        withContext(Dispatchers.IO) {
+            file.createNewFile()
+        }
         val number = NumberGenerator.generateRandomNumber()
         val repository = FileNumberLogRepository(file)
 
@@ -29,7 +36,7 @@ class FileNumberLogRepositoryTest {
     }
 
     @Test
-    fun `write multiple numbers number in file provided in constructor`() {
+    fun `write multiple numbers number in file provided in constructor`() = runTest {
         val number = NumberGenerator.generateRandomNumber()
         val number2 = NumberGenerator.generateRandomNumber()
         val repository = FileNumberLogRepository(file)

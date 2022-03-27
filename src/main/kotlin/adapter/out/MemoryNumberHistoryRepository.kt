@@ -1,11 +1,14 @@
 package adapter.out
 
 import domain.contract.NumberHistoryRepository
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class MemoryNumberHistoryRepository : NumberHistoryRepository {
     private val numbersMap: MutableMap<Int, Boolean> = HashMap()
     private var uniqueNumbers: Int = 0
     private var duplicateNumbers: Int = 0
+    private val mutex = Mutex()
 
     override fun countUniqueNumbers(): Int {
         return uniqueNumbers
@@ -15,16 +18,21 @@ class MemoryNumberHistoryRepository : NumberHistoryRepository {
         return duplicateNumbers
     }
 
-    override fun persistNumber(number: Int) {
+    override suspend fun persistNumber(number: Int) {
         if (!isNumberAlreadyPersisted(number)) {
-            numbersMap[number] = false
-            ++uniqueNumbers
+            mutex.withLock {
+                numbersMap[number] = false
+                ++uniqueNumbers
+            }
+
             return
         }
         if (!wasAccessedBefore(number)) {
-            numbersMap[number] = true
-            ++duplicateNumbers
-            --uniqueNumbers
+            mutex.withLock {
+                numbersMap[number] = true
+                ++duplicateNumbers
+                --uniqueNumbers
+            }
         }
     }
 

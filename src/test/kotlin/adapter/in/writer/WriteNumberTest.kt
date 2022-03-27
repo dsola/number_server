@@ -8,9 +8,13 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.justRun
 import io.mockk.verify
+import kotlinx.coroutines.*
+import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
+@ExperimentalCoroutinesApi
 @ExtendWith(MockKExtension::class)
 class WriteNumberTest {
     @Test
@@ -21,12 +25,12 @@ class WriteNumberTest {
         val number = NumberGenerator.generateRandomNumber()
         val writeNumber = WriteNumber(numberHistoryRepository, logRepository)
         every { numberHistoryRepository.isNumberAlreadyPersisted(number) } returns false
-        justRun { numberHistoryRepository.persistNumber(number) }
-        justRun { logRepository.writeNumberInLog(number) }
+        justRun { runBlocking {  numberHistoryRepository.persistNumber(number) } }
+        justRun { runBlocking { logRepository.writeNumberInLog(number) } }
 
         writeNumber.write(number)
 
-        verify(exactly = 1) { numberHistoryRepository.persistNumber(number) }
+        verify(exactly = 1) { runBlocking {  numberHistoryRepository.persistNumber(number) } }
     }
 
     @Test
@@ -36,14 +40,14 @@ class WriteNumberTest {
     ) {
         val number = NumberGenerator.generateRandomNumber()
         val writeNumber = WriteNumber(numberHistoryRepository, logRepository)
-        justRun { numberHistoryRepository.persistNumber(number) }
+        justRun { runBlocking {  numberHistoryRepository.persistNumber(number) } }
         every { numberHistoryRepository.isNumberAlreadyPersisted(number) } returns false
-        justRun { numberHistoryRepository.persistNumber(number) }
-        justRun { logRepository.writeNumberInLog(number) }
+        justRun { runBlocking { numberHistoryRepository.persistNumber(number) } }
+        justRun { runBlocking { logRepository.writeNumberInLog(number) } }
 
         writeNumber.write(number)
 
-        verify(exactly = 1) { logRepository.writeNumberInLog(number) }
+        verify(exactly = 1) { runBlocking { logRepository.writeNumberInLog(number) } }
     }
 
     @Test
@@ -53,13 +57,13 @@ class WriteNumberTest {
     ) {
         val number = NumberGenerator.generateRandomNumber()
         val writeNumber = WriteNumber(numberHistoryRepository, logRepository)
-        justRun { numberHistoryRepository.persistNumber(number) }
+        justRun { runBlocking { numberHistoryRepository.persistNumber(number) } }
         every { numberHistoryRepository.isNumberAlreadyPersisted(number) } returns true
-        justRun { numberHistoryRepository.persistNumber(number) }
-        justRun { logRepository.writeNumberInLog(number) }
+        justRun { runBlocking { numberHistoryRepository.persistNumber(number) } }
+        justRun { runBlocking { logRepository.writeNumberInLog(number) } }
 
         writeNumber.write(number)
 
-        verify(exactly = 0) { logRepository.writeNumberInLog(number) }
+        verify(exactly = 0) { runBlocking { logRepository.writeNumberInLog(number) } }
     }
 }

@@ -1,11 +1,16 @@
 package adapter.out
 
 import domain.contract.NumberLogRepository
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.io.File
 
 class FileNumberLogRepository(private val file: File) : NumberLogRepository {
-    override fun writeNumberInLog(number: Int) {
-        file.appendText("$number\n")
+    private val mutex = Mutex()
+    override suspend fun writeNumberInLog(number: Int) {
+        mutex.withLock {
+            file.appendText("$number\n")
+        }
     }
 
     companion object {

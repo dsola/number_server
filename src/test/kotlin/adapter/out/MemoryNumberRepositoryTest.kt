@@ -1,11 +1,14 @@
 package adapter.out
 
 import generator.NumberGenerator
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+@ExperimentalCoroutinesApi
 class MemoryNumberRepositoryTest {
     private val repository: MemoryNumberHistoryRepository = MemoryNumberHistoryRepository()
 
@@ -20,7 +23,7 @@ class MemoryNumberRepositoryTest {
     }
 
     @Test
-    fun `one unique number found if it was persisted before`() {
+    fun `one unique number found if it was persisted before`() = runTest {
         val number = NumberGenerator.generateRandomNumber()
         repository.persistNumber(number)
 
@@ -28,7 +31,7 @@ class MemoryNumberRepositoryTest {
     }
 
     @Test
-    fun `multiple unique numbers found if multiple were persisted before`() {
+    fun `multiple unique numbers found if multiple were persisted before`() = runTest {
         val number = NumberGenerator.generateRandomNumber()
         val number2 = NumberGenerator.generateRandomNumber()
         val number3 = NumberGenerator.generateRandomNumber()
@@ -41,7 +44,7 @@ class MemoryNumberRepositoryTest {
     }
 
     @Test
-    fun `one duplicate number found if it was already there`() {
+    fun `one duplicate number found if it was already there`() = runTest {
         val number = NumberGenerator.generateRandomNumber()
         repository.persistNumber(number)
         repository.persistNumber(number)
@@ -50,7 +53,7 @@ class MemoryNumberRepositoryTest {
     }
 
     @Test
-    fun `multiple duplicates found if persisted more than two times but only count one`() {
+    fun `multiple duplicates found if persisted more than two times but only count one`() = runTest {
         val number = NumberGenerator.generateRandomNumber()
         repository.persistNumber(number)
         repository.persistNumber(number)
@@ -60,7 +63,7 @@ class MemoryNumberRepositoryTest {
     }
 
     @Test
-    fun `number is not count as unique if persisted more than once`() {
+    fun `number is not count as unique if persisted more than once`() = runTest {
         val number = NumberGenerator.generateRandomNumber()
         repository.persistNumber(number)
         repository.persistNumber(number)
@@ -69,7 +72,7 @@ class MemoryNumberRepositoryTest {
     }
 
     @Test
-    fun `inform that number was persisted`() {
+    fun `inform that number was persisted`() = runTest {
         val number = NumberGenerator.generateRandomNumber()
 
         repository.persistNumber(number)

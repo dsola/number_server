@@ -1,5 +1,5 @@
 package domain.contract
 
 interface NumberLogRepository {
-    fun writeNumberInLog(number: Int)
+    suspend fun writeNumberInLog(number: Int)
 }

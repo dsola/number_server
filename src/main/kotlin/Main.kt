@@ -21,11 +21,4 @@ fun main(args: Array<String>) {
         numberReportHistoryRepository
     ).execute(10)
     queue.start(1)
-    queue.writeNewNumber(15)
-    queue.writeNewNumber(15)
-    queue.writeNewNumber(15)
-    queue.writeNewNumber(30)
-    queue.writeNewNumber(40)
-    queue.writeNewNumber(50)
-
 }

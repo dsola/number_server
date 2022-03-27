@@ -14,7 +14,7 @@ class TestNumberHistoryRepository(
         return duplicateNumbers.count()
     }
 
-    override fun persistNumber(number: Int) {}
+    override suspend fun persistNumber(number: Int) {}
 
     override fun isNumberAlreadyPersisted(number: Int): Boolean {
         return true
