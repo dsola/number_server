@@ -2,7 +2,7 @@ package adapter.`in`.writer
 
 import domain.contract.NumberHistoryRepository
 import domain.contract.NumberLogRepository
-import domain.generator.NumberGenerator
+import generator.NumberGenerator
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension

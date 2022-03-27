@@ -1,4 +1,4 @@
-package adapter.out
+package implementation
 
 import domain.contract.ReportHistoryRepository
 import domain.entity.ReportResult

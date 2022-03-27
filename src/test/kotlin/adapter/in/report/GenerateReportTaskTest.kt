@@ -1,10 +1,10 @@
 package adapter.`in`.report
 
-import adapter.out.TestNumberHistoryRepository
-import adapter.out.TestReportHistoryRepository
 import domain.contract.ReportHistoryRepository
 import domain.entity.ReportResult
-import domain.generator.NumberGenerator
+import generator.NumberGenerator
+import implementation.TestNumberHistoryRepository
+import implementation.TestReportHistoryRepository
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
