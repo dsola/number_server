@@ -25,7 +25,7 @@ class ClientInputDispatcherTest {
 
         dispatcher.dispatchToChannel(clientId, number)
 
-        verify { runBlocking { channel.send(ClientAction.NewValue(number)) } }
+        verify { runBlocking { channel.send(ClientAction.NewValue(number.toInt())) } }
     }
 
     @Test
