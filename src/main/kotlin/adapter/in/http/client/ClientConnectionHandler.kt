@@ -7,7 +7,6 @@ import java.io.InputStreamReader
 import java.net.Socket
 import java.net.SocketException
 import java.util.Scanner
-import kotlin.system.exitProcess
 
 @ObsoleteCoroutinesApi
 class ClientConnectionHandler(private val numberDispatcher: ClientInputDispatcher) {
@@ -24,7 +23,6 @@ class ClientConnectionHandler(private val numberDispatcher: ClientInputDispatche
                     )
                 }
                 input.close()
-                exitProcess(0)
             } catch (e: SocketException) {
                 println("The client $clientId was disconnected")
             }
