@@ -13,7 +13,6 @@ class NumberValidator {
             } catch (e: NumberFormatException) {
                 false
             }
-
         }
     }
 }

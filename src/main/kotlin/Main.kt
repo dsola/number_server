@@ -11,7 +11,7 @@ import java.net.ServerSocket
 
 @ObsoleteCoroutinesApi
 @DelicateCoroutinesApi
-fun main(args: Array<String>) {
+fun main() {
     val numberHistoryRepository = MemoryNumberHistoryRepository()
     val numberReportHistoryRepository = MemoryReportHistoryRepository()
     val logRepository = FileNumberLogRepository.generateForPath(
@@ -26,5 +26,8 @@ fun main(args: Array<String>) {
     ).execute(10)
     queue.start(1)
 
-    ConcurrentHttpServer(queue, ServerSocket(4000)).start()
+    ConcurrentHttpServer(
+        queue,
+        ServerSocket(4000)
+    ).start()
 }
