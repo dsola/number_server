@@ -6,10 +6,12 @@ import adapter.out.InMemoryNumberQueueWriter
 import adapter.out.MemoryNumberHistoryRepository
 import adapter.out.MemoryReportHistoryRepository
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import java.net.ServerSocket
 
+@ObsoleteCoroutinesApi
 @DelicateCoroutinesApi
-fun main() {
+fun main(args: Array<String>) {
     val numberHistoryRepository = MemoryNumberHistoryRepository()
     val numberReportHistoryRepository = MemoryReportHistoryRepository()
     val logRepository = FileNumberLogRepository.generateForPath(

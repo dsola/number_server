@@ -40,9 +40,8 @@ class InMemoryNumberQueueWriter(private val writeNumber: WriteNumber) : NumberQu
     private fun startWorker() = runBlocking {
         while (true) {
             waitForNumber()
-            var lastNumber: Int
-            mutex.withLock {
-                lastNumber = queue.remove()
+            val lastNumber = mutex.withLock {
+                queue.remove()
             }
             lastNumber.let { writeNumber.write(lastNumber) }
         }
