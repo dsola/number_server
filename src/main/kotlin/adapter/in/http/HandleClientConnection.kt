@@ -36,7 +36,7 @@ class HandleClientConnection(
     }
 
     private suspend fun sendValueToChannel(text: String) {
-        if (text == "shutdown") {
+        if (text == "terminate") {
             shutdown()
             channel.send(Pair(ServerStatus.SHUTDOWN, text))
         } else {

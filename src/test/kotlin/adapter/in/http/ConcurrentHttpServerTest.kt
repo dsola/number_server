@@ -19,6 +19,7 @@ import java.net.ServerSocket
 @ExtendWith(MockKExtension::class)
 class ConcurrentHttpServerTest {
     lateinit var socketServer: ServerSocket
+
     @BeforeEach
     fun setUp() {
         socketServer = ServerSocket(5001)
@@ -33,13 +34,17 @@ class ConcurrentHttpServerTest {
         justRun { queueWriter.writeNewNumber(inputValue.toInt()) }
 
         client.sendMessage(inputValue)
-        client.stopConnection()
 
-        verify { queueWriter.writeNewNumber(inputValue.toInt()) }
+        verify(exactly = 1) { queueWriter.writeNewNumber(inputValue.toInt()) }
+
+        client.stopConnection()
+        socketServer.close()
     }
 
     @AfterEach
     fun tearDown() {
-        socketServer.close()
+        if (!socketServer.isClosed) {
+            socketServer.close()
+        }
     }
 }
