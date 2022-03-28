@@ -28,12 +28,12 @@ class GenerateReportTask(
     private fun calculateUniqueNumbersSinceLastReport(currentReport: ReportResult, previousReport: ReportResult?): Int {
         val uniqueNumbersUntilLastReport = previousReport?.countUniqueNumbers ?: 0
 
-        return currentReport.countUniqueNumbers - uniqueNumbersUntilLastReport
+        return maxOf(0, currentReport.countUniqueNumbers - uniqueNumbersUntilLastReport)
     }
 
     private fun calculateDuplicateNumbersSinceLastReport(currentReport: ReportResult, previousReport: ReportResult?): Int {
         val duplicateNumbersUntilLastReport = previousReport?.countDuplicateNumbers ?: 0
 
-        return currentReport.countDuplicateNumbers - duplicateNumbersUntilLastReport
+        return maxOf(0, currentReport.countDuplicateNumbers - duplicateNumbersUntilLastReport)
     }
 }

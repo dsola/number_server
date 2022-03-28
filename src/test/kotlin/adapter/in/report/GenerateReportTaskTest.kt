@@ -158,6 +158,29 @@ class GenerateReportTaskTest {
         }
     }
 
+    @Test
+    fun `do not display a negative result from last report`(@MockK reportHistoryRepository: ReportHistoryRepository) {
+        val numberOfItems = 5
+        val uniqueNumbers = NumberGenerator.generateRandomList(numberOfItems)
+        val duplicateNumbers = NumberGenerator.generateRandomList(numberOfItems)
+        val task = GenerateReportTask(
+            TestNumberHistoryRepository(uniqueNumbers, duplicateNumbers),
+            TestReportHistoryRepository(
+                ReportResult(7,7)
+            )
+        )
+
+        task.run()
+
+        assertTrue("Unique counter from last report is wrong in stdout") {
+            outputStreamCaptor.toString().contains("0 unique numbers")
+        }
+
+        assertTrue("Unique counter from last report is wrong in stdout") {
+            outputStreamCaptor.toString().contains("0 duplicates")
+        }
+    }
+
     @AfterEach
     fun tearDown() {
         System.setOut(standardOut)
