@@ -17,6 +17,7 @@ class FileNumberLogRepository(private val file: File) : NumberLogRepository {
         fun generateForPath(filePath: String): NumberLogRepository {
             val file = File(filePath)
             file.createNewFile()
+            file.writeText("")
             return FileNumberLogRepository(file)
         }
     }
