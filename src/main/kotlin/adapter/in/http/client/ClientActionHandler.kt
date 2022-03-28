@@ -1,6 +1,6 @@
 package adapter.`in`.http.client
 
-import domain.contract.NumberQueueWriter
+import adapter.`in`.writer.WriteNumber
 import domain.entity.ClientAction
 import kotlinx.coroutines.Job
 import java.net.ServerSocket
@@ -9,7 +9,7 @@ import java.net.Socket
 class ClientActionHandler(
     private val clientConnections: MutableMap<String, Pair<Socket, Job>>,
     private val server: ServerSocket,
-    private val queueWriter: NumberQueueWriter
+    private val writeNumber: WriteNumber
 ) {
 
     fun handle(action: ClientAction) {
@@ -32,12 +32,12 @@ class ClientActionHandler(
             clientConnection.first.close()
             clientConnection.second.cancel()
         }
-        queueWriter.stop()
         server.close()
     }
 
     private fun processNewInput(input: Int) {
-        queueWriter.writeNewNumber(input)
+        println("Writing number $input.")
+        writeNumber.write(input)
     }
 
     private fun disconnectAndRemoveClient(clientId: String) {

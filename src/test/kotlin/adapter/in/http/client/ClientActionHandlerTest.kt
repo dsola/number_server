@@ -1,6 +1,6 @@
 package adapter.`in`.http.client
 
-import domain.contract.NumberQueueWriter
+import adapter.`in`.writer.WriteNumber
 import domain.entity.ClientAction
 import generator.NumberGenerator
 import io.mockk.impl.annotations.MockK
@@ -20,27 +20,27 @@ class ClientActionHandlerTest {
     @Test
     fun `process input received if action is new value`(
         @MockK server: ServerSocket,
-        @MockK queueWriter: NumberQueueWriter,
+        @MockK writeNumber: WriteNumber,
     ) {
         val number = NumberGenerator.generateRandomNumber()
-        justRun { queueWriter.writeNewNumber(number) }
+        justRun { writeNumber.write(number) }
         val clientConnections = mutableMapOf<String, Pair<Socket, Job>>()
 
         val handler = ClientActionHandler(
             clientConnections,
             server,
-            queueWriter
+            writeNumber
         )
 
         handler.handle(ClientAction.NewValue(number))
 
-        verify { queueWriter.writeNewNumber(number) }
+        verify { writeNumber.write(number) }
     }
 
     @Test
     fun `not break when disconnect does not match with any client`(
         @MockK server: ServerSocket,
-        @MockK queueWriter: NumberQueueWriter,
+        @MockK writeNumber: WriteNumber,
     ) {
         val clientId = "1"
         val clientConnections = mutableMapOf<String, Pair<Socket, Job>>()
@@ -48,7 +48,7 @@ class ClientActionHandlerTest {
         val handler = ClientActionHandler(
             clientConnections,
             server,
-            queueWriter
+            writeNumber
         )
 
         handler.handle(ClientAction.Disconnect(clientId))
@@ -57,7 +57,7 @@ class ClientActionHandlerTest {
     @Test
     fun `disconnect client and cancel socket when disconnect action arrives`(
         @MockK server: ServerSocket,
-        @MockK queueWriter: NumberQueueWriter,
+        @MockK writeNumber: WriteNumber,
     ) {
         val clientId = "1"
         val item = generateClientConnection()
@@ -67,7 +67,7 @@ class ClientActionHandlerTest {
         val handler = ClientActionHandler(
             clientConnections,
             server,
-            queueWriter
+            writeNumber
         )
         handler.handle(ClientAction.Disconnect(clientId))
 
@@ -79,14 +79,13 @@ class ClientActionHandlerTest {
     @Test
     fun `disconnect all clients when shutdown appears`(
         @MockK server: ServerSocket,
-        @MockK queueWriter: NumberQueueWriter,
+        @MockK writeNumber: WriteNumber,
     ) {
         val clientId1 = "1"
         val clientId2 = "2"
         val item1 = generateClientConnection()
         val item2 = generateClientConnection()
         justRun { server.close() }
-        justRun { queueWriter.stop() }
         val clientConnections = mutableMapOf<String, Pair<Socket, Job>>()
         clientConnections[clientId1] = item1
         clientConnections[clientId2] = item2
@@ -94,7 +93,7 @@ class ClientActionHandlerTest {
         val handler = ClientActionHandler(
             clientConnections,
             server,
-            queueWriter
+            writeNumber
         )
         handler.handle(ClientAction.Shutdown)
 
@@ -103,7 +102,6 @@ class ClientActionHandlerTest {
         verify { item2.first.close() }
         verify { item2.second.cancel() }
         verify(exactly = 1) { server.close() }
-        verify(exactly = 1) { queueWriter.stop() }
     }
 
     private fun generateClientConnection(): Pair<Socket, Job> {
