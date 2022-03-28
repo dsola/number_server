@@ -1,7 +1,7 @@
 package implementation
 
-import domain.contract.ReportHistoryRepository
-import domain.entity.ReportResult
+import output.persistence.ReportHistoryRepository
+import report.ReportResult
 
 class TestReportHistoryRepository(private val lastReportResult: ReportResult?) : ReportHistoryRepository {
     override fun getResultsFromLastReport(): ReportResult? {

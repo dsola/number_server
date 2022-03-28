@@ -1,6 +1,6 @@
 package implementation
 
-import domain.contract.NumberHistoryRepository
+import output.persistence.NumberHistoryRepository
 
 class TestNumberHistoryRepository(
     private val uniqueNumbers: List<Int>,
