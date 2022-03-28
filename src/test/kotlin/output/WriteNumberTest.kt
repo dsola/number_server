@@ -1,6 +1,5 @@
 package output
 
-import output.WriteNumber
 import output.persistence.NumberHistoryRepository
 import output.persistence.NumberLogRepository
 import generator.NumberGenerator

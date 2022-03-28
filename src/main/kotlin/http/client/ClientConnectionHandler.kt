@@ -16,7 +16,6 @@ class ClientConnectionHandler(private val numberDispatcher: ClientInputDispatche
             try {
                 while (input.hasNext()) {
                     val number = input.nextLine()
-                    println("Reading $number")
                     numberDispatcher.dispatchToChannel(
                         clientId,
                         number

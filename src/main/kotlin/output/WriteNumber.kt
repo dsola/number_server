@@ -9,7 +9,6 @@ class WriteNumber(
     private val logRepository: NumberLogRepository
 ) {
     fun write(number: Int) = runBlocking {
-        println("New number $number from queue.")
         if (!numberHistoryRepository.isNumberAlreadyPersisted(number)) {
             logRepository.writeNumberInLog(number)
         }
