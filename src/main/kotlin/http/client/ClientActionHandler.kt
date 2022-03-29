@@ -1,48 +1,59 @@
 package http.client
 
-import output.WriteNumber
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import output.WriteNumber
 import java.net.ServerSocket
 import java.net.Socket
+typealias ClientConnection = Pair<Socket, Job>
 
 class ClientActionHandler(
-    private val clientConnections: MutableMap<String, Pair<Socket, Job>>,
+    private val clientConnections: MutableMap<String, ClientConnection>,
     private val server: ServerSocket,
     private val writeNumber: WriteNumber
 ) {
-
-    fun handle(action: ClientAction) {
+    private val mutex = Mutex()
+    suspend fun handle(action: ClientAction) {
         when (action) {
-            is ClientAction.Shutdown -> {
-                shutdownClients()
-            }
-            is ClientAction.NewValue -> {
-                processNewInput(action.value)
-            }
-            is ClientAction.Disconnect -> {
-                disconnectAndRemoveClient(action.clientId)
-            }
+            is ClientAction.Shutdown -> shutdownClients()
+            is ClientAction.NewValue -> processNewInput(action.value)
+            is ClientAction.Disconnect -> disconnectClient(action.clientId)
         }
     }
 
-    private fun shutdownClients() {
+    private suspend fun shutdownClients() {
         println("Shutting down the system.")
-        for (clientConnection in clientConnections.values) {
-            clientConnection.first.close()
-            clientConnection.second.cancel()
+        clientConnections.values.forEach {
+            terminateClient(it)
         }
-        server.close()
+        withContext(Dispatchers.IO) {
+            server.close()
+        }
     }
 
-    private fun processNewInput(input: Int) {
+    private suspend fun processNewInput(input: Int) {
         println("Writing number $input.")
         writeNumber.write(input)
     }
 
-    private fun disconnectAndRemoveClient(clientId: String) {
-        println("Removing client $clientId")
-        clientConnections[clientId]?.first?.close()
-        clientConnections[clientId]?.second?.cancel()
-        clientConnections.remove(clientId)
+    private suspend fun disconnectClient(clientId: String) {
+        if (clientConnections.containsKey(clientId)) {
+            clientConnections[clientId]?.let { terminateClient(it) }
+            removeClient(clientId)
+        }
+    }
+
+    private fun terminateClient(clientConnection: ClientConnection) {
+        clientConnection.first.close()
+        clientConnection.second.cancel()
+    }
+
+    private suspend fun removeClient(clientId: String) {
+        mutex.withLock {
+            clientConnections.remove(clientId)
+        }
     }
 }

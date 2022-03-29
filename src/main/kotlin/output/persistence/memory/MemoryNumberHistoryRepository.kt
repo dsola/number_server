@@ -1,46 +1,38 @@
 package output.persistence.memory
 
 import output.persistence.NumberHistoryRepository
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 
 class MemoryNumberHistoryRepository : NumberHistoryRepository {
-    private val numbersMap: MutableMap<Int, Boolean> = HashMap()
-    private var uniqueNumbers: Int = 0
-    private var duplicateNumbers: Int = 0
-    private val mutex = Mutex()
+    private val duplicatedNumbers: MutableMap<Int, Boolean> = HashMap()
+    private var uniqueNumbersCounter: Int = 0
+    private var duplicateNumbersCounter: Int = 0
 
     override fun countUniqueNumbers(): Int {
-        return uniqueNumbers
+        return uniqueNumbersCounter
     }
 
     override fun countDuplicateNumbers(): Int {
-        return duplicateNumbers
+        return duplicateNumbersCounter
     }
 
     override suspend fun persistNumber(number: Int) {
         if (!isNumberAlreadyPersisted(number)) {
-            mutex.withLock {
-                numbersMap[number] = false
-                ++uniqueNumbers
-            }
-
+            duplicatedNumbers[number] = false
+            ++uniqueNumbersCounter
             return
         }
         if (!wasAccessedBefore(number)) {
-            mutex.withLock {
-                numbersMap[number] = true
-                ++duplicateNumbers
-                --uniqueNumbers
-            }
+            duplicatedNumbers[number] = true
+            ++duplicateNumbersCounter
+            --uniqueNumbersCounter
         }
     }
 
     override fun isNumberAlreadyPersisted(number: Int): Boolean {
-        return numbersMap.containsKey(number)
+        return duplicatedNumbers.containsKey(number)
     }
 
     private fun wasAccessedBefore(number: Int): Boolean {
-        return numbersMap.containsKey(number) && numbersMap[number] == true
+        return duplicatedNumbers.containsKey(number) && duplicatedNumbers[number] == true
     }
 }
