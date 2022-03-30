@@ -16,4 +16,4 @@ Please check the following diagram to have a clear vision of the process flow of
 - This actor sends the data to a worker (called `ClientConnectionHandler`) which handles the data.
 
 ## Tests
-The domain logic of the application has been tested using the JUnit library. The implementation details were not tested, such as validating that the socket reads the provided input.
+The domain logic of the application has been tested using the [JUnit](https://kotlinlang.org/docs/jvm-test-using-junit.html) library. The implementation details were not tested, such as validating that the socket reads the provided input.
