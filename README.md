@@ -6,7 +6,7 @@
 - No more than 5 concurrent clients can be connected.
 
 ## Diagram flow
-Please check the following diagram to have a clear vision of the process flow of each request coming into the server:
+Please check the following diagram to have a clear vision of the process flow from each request coming into the server:
 ![Diagram Flow](./docs/number_server.png)
 
 ## How client connections send data?
