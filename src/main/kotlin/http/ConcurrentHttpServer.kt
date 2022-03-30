@@ -4,6 +4,8 @@ import http.client.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.net.ServerSocket
 import java.util.*
 
@@ -14,6 +16,7 @@ class ConcurrentHttpServer(
     private val clientConnections: MutableMap<String, ClientConnection> = mutableMapOf(),
     private val clientActionHandler: ClientActionHandler
 ) {
+    private val mutex = Mutex()
 
     fun start() = runBlocking {
         println("Server is running on port ${server.localPort}")
@@ -37,10 +40,12 @@ class ConcurrentHttpServer(
                 } else {
                     val clientId = UUID.randomUUID().toString()
                     println("Client connected: $clientId")
-                    clientConnections[clientId] = ClientConnection(
-                        client,
-                        launch { clientConnectionHandler.handle(client, clientId) },
-                    )
+                    mutex.withLock {
+                        clientConnections[clientId] = ClientConnection(
+                            client,
+                            launch { clientConnectionHandler.handle(client, clientId) },
+                        )
+                    }
                 }
             }
         }

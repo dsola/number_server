@@ -1,9 +1,7 @@
 package http.client
 
 import output.WriteNumber
-import http.client.ClientAction
 import generator.NumberGenerator
-import http.client.ClientActionHandler
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.justRun

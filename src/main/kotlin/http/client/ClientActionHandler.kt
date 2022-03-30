@@ -38,6 +38,7 @@ class ClientActionHandler(
 
     private suspend fun disconnectClient(clientId: String) {
         if (clientConnections.containsKey(clientId)) {
+            println("Disconnecting client $clientId.")
             clientConnections[clientId]?.let { terminateClient(it) }
             removeClient(clientId)
         }
