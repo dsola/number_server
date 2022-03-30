@@ -1,21 +1,17 @@
 package http
 
-import http.client.ClientActionHandler
-import http.client.ClientConnectionHandler
-import http.client.ClientInputDispatcher
-import http.client.ClientAction
+import http.client.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.channels.consumeEach
 import java.net.ServerSocket
-import java.net.Socket
 import java.util.*
 
 @DelicateCoroutinesApi
 @ObsoleteCoroutinesApi
 class ConcurrentHttpServer(
     private val server: ServerSocket,
-    private val clientConnections: MutableMap<String, Pair<Socket, Job>> = mutableMapOf(),
+    private val clientConnections: MutableMap<String, ClientConnection> = mutableMapOf(),
     private val clientActionHandler: ClientActionHandler
 ) {
 
@@ -41,7 +37,7 @@ class ConcurrentHttpServer(
                 } else {
                     val clientId = UUID.randomUUID().toString()
                     println("Client connected: $clientId")
-                    clientConnections[clientId] = Pair(
+                    clientConnections[clientId] = ClientConnection(
                         client,
                         launch { clientConnectionHandler.handle(client, clientId) },
                     )
@@ -50,7 +46,7 @@ class ConcurrentHttpServer(
         }
 
         for (clientConnection in clientConnections.values) {
-            clientConnection.second.join()
+            clientConnection.job.join()
         }
     }
 }

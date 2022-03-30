@@ -1,15 +1,14 @@
 import http.ConcurrentHttpServer
 import http.client.ClientActionHandler
+import http.client.ClientConnection
 import report.Scheduler
 import output.persistence.log.LogNumberRepository
 import output.persistence.memory.MemoryNumberHistoryRepository
 import output.persistence.memory.MemoryReportHistoryRepository
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import output.WriteNumber
 import java.net.ServerSocket
-import java.net.Socket
 import java.net.SocketException
 import kotlin.system.exitProcess
 
@@ -26,7 +25,7 @@ fun main() {
         numberReportHistoryRepository
     ).execute(10)
 
-    val clientConnections = mutableMapOf<String, Pair<Socket, Job>>()
+    val clientConnections = mutableMapOf<String, ClientConnection>()
     val server = ServerSocket(4000)
     val clientActionHandler = ClientActionHandler(
         clientConnections,
@@ -43,5 +42,4 @@ fun main() {
         println("Http server was closed. Terminating...")
         exitProcess(0)
     }
-
 }

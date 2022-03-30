@@ -1,14 +1,11 @@
 package http.client
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import output.WriteNumber
 import java.net.ServerSocket
-import java.net.Socket
-typealias ClientConnection = Pair<Socket, Job>
 
 class ClientActionHandler(
     private val clientConnections: MutableMap<String, ClientConnection>,
@@ -47,8 +44,8 @@ class ClientActionHandler(
     }
 
     private fun terminateClient(clientConnection: ClientConnection) {
-        clientConnection.first.close()
-        clientConnection.second.cancel()
+        clientConnection.clientSocket.close()
+        clientConnection.job.cancel()
     }
 
     private suspend fun removeClient(clientId: String) {

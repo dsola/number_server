@@ -25,7 +25,7 @@ class ClientActionHandlerTest {
     ) {
         val number = NumberGenerator.generateRandomNumber()
         justRun { writeNumber.write(number) }
-        val clientConnections = mutableMapOf<String, Pair<Socket, Job>>()
+        val clientConnections = mutableMapOf<String, ClientConnection>()
 
         val handler = ClientActionHandler(
             clientConnections,
@@ -44,7 +44,7 @@ class ClientActionHandlerTest {
         @MockK writeNumber: WriteNumber,
     ) {
         val clientId = "1"
-        val clientConnections = mutableMapOf<String, Pair<Socket, Job>>()
+        val clientConnections = mutableMapOf<String, ClientConnection>()
 
         val handler = ClientActionHandler(
             clientConnections,
@@ -62,7 +62,7 @@ class ClientActionHandlerTest {
     ) {
         val clientId = "1"
         val item = generateClientConnection()
-        val clientConnections = mutableMapOf<String, Pair<Socket, Job>>()
+        val clientConnections = mutableMapOf<String, ClientConnection>()
         clientConnections[clientId] = item
 
         val handler = ClientActionHandler(
@@ -72,8 +72,8 @@ class ClientActionHandlerTest {
         )
         handler.handle(ClientAction.Disconnect(clientId))
 
-        verify { item.first.close() }
-        verify { item.second.cancel() }
+        verify { item.clientSocket.close() }
+        verify { item.job.cancel() }
         assertFalse { clientConnections.contains(clientId) }
     }
 
@@ -87,7 +87,7 @@ class ClientActionHandlerTest {
         val item1 = generateClientConnection()
         val item2 = generateClientConnection()
         justRun { server.close() }
-        val clientConnections = mutableMapOf<String, Pair<Socket, Job>>()
+        val clientConnections = mutableMapOf<String, ClientConnection>()
         clientConnections[clientId1] = item1
         clientConnections[clientId2] = item2
 
@@ -98,18 +98,18 @@ class ClientActionHandlerTest {
         )
         handler.handle(ClientAction.Shutdown)
 
-        verify { item1.first.close() }
-        verify { item1.second.cancel() }
-        verify { item2.first.close() }
-        verify { item2.second.cancel() }
+        verify { item1.clientSocket.close() }
+        verify { item1.job.cancel() }
+        verify { item2.clientSocket.close() }
+        verify { item2.job.cancel() }
         verify(exactly = 1) { server.close() }
     }
 
-    private fun generateClientConnection(): Pair<Socket, Job> {
+    private fun generateClientConnection(): ClientConnection {
         val client = mockk<Socket>()
         val job = mockk<Job>()
         justRun { client.close() }
         justRun { job.cancel() }
-        return Pair(client, job)
+        return ClientConnection(client, job)
     }
 }
