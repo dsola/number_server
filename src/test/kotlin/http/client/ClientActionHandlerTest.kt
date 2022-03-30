@@ -19,7 +19,7 @@ import kotlin.test.assertFalse
 @ExtendWith(MockKExtension::class)
 class ClientActionHandlerTest {
     @Test
-    fun `process input received if action is new value`(
+    suspend fun `process input received if action is new value`(
         @MockK server: ServerSocket,
         @MockK writeNumber: WriteNumber,
     ) {
@@ -39,7 +39,7 @@ class ClientActionHandlerTest {
     }
 
     @Test
-    fun `not break when disconnect does not match with any client`(
+    suspend fun `not break when disconnect does not match with any client`(
         @MockK server: ServerSocket,
         @MockK writeNumber: WriteNumber,
     ) {
@@ -56,7 +56,7 @@ class ClientActionHandlerTest {
     }
 
     @Test
-    fun `disconnect client and cancel socket when disconnect action arrives`(
+    suspend fun `disconnect client and cancel socket when disconnect action arrives`(
         @MockK server: ServerSocket,
         @MockK writeNumber: WriteNumber,
     ) {
@@ -78,7 +78,7 @@ class ClientActionHandlerTest {
     }
 
     @Test
-    fun `disconnect all clients when shutdown appears`(
+    suspend fun `disconnect all clients when shutdown appears`(
         @MockK server: ServerSocket,
         @MockK writeNumber: WriteNumber,
     ) {

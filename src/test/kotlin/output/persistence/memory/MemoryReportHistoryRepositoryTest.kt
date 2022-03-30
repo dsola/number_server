@@ -1,20 +1,10 @@
 package output.persistence.memory
 
 import org.junit.jupiter.api.Test
-import output.persistence.memory.MemoryReportHistoryRepository
 import report.ReportResult
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 class MemoryReportHistoryRepositoryTest {
-
-    @Test
-    fun `return null report if no previous reports were stored`() {
-        val repository = MemoryReportHistoryRepository()
-
-        assertNull(repository.getResultsFromLastReport())
-    }
-
     @Test
     fun `return last report when multiple reports were persisted`() {
         val repository = MemoryReportHistoryRepository()

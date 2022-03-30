@@ -36,7 +36,7 @@ class GenerateReportTaskTest {
                 listOf(),
                 listOf()
             ),
-            TestReportHistoryRepository(null)
+            TestReportHistoryRepository(ReportResult(0,0))
         )
 
         task.run()
@@ -60,7 +60,7 @@ class GenerateReportTaskTest {
                 NumberGenerator.generateRandomList(numberOfItems),
                 NumberGenerator.generateRandomList(numberOfItems)
             ),
-            TestReportHistoryRepository(null)
+            TestReportHistoryRepository(ReportResult(0,0))
         )
 
         task.run()
@@ -113,7 +113,7 @@ class GenerateReportTaskTest {
         val duplicateNumbers = NumberGenerator.generateRandomList(numberOfItems)
         val task = GenerateReportTask(
             TestNumberHistoryRepository(uniqueNumbers, duplicateNumbers),
-            TestReportHistoryRepository(null)
+            TestReportHistoryRepository(ReportResult(0,0))
         )
 
         task.run()
@@ -127,7 +127,7 @@ class GenerateReportTaskTest {
         val duplicateNumbers = NumberGenerator.generateRandomList(numberOfItems)
         val task = GenerateReportTask(
             TestNumberHistoryRepository(listOf(), duplicateNumbers),
-            TestReportHistoryRepository(null)
+            TestReportHistoryRepository(ReportResult(0,0))
         )
 
         task.run()

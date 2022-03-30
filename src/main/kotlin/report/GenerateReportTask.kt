@@ -24,14 +24,14 @@ class GenerateReportTask(
         reportHistoryRepository.saveResultFromCurrentReport(resultsFromCurrentReport)
     }
 
-    private fun calculateUniqueNumbersSinceLastReport(currentReport: ReportResult, previousReport: ReportResult?): Int {
-        val uniqueNumbersUntilLastReport = previousReport?.countUniqueNumbers ?: 0
+    private fun calculateUniqueNumbersSinceLastReport(currentReport: ReportResult, previousReport: ReportResult): Int {
+        val uniqueNumbersUntilLastReport = previousReport.countUniqueNumbers
 
         return maxOf(0, currentReport.countUniqueNumbers - uniqueNumbersUntilLastReport)
     }
 
-    private fun calculateDuplicateNumbersSinceLastReport(currentReport: ReportResult, previousReport: ReportResult?): Int {
-        val duplicateNumbersUntilLastReport = previousReport?.countDuplicateNumbers ?: 0
+    private fun calculateDuplicateNumbersSinceLastReport(currentReport: ReportResult, previousReport: ReportResult): Int {
+        val duplicateNumbersUntilLastReport = previousReport.countDuplicateNumbers
 
         return maxOf(0, currentReport.countDuplicateNumbers - duplicateNumbersUntilLastReport)
     }
