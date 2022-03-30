@@ -1,4 +1,4 @@
-package output.persistence.file
+package output.persistence.log
 
 import generator.NumberGenerator
 import kotlinx.coroutines.Dispatchers
@@ -8,13 +8,12 @@ import kotlinx.coroutines.withContext
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import output.persistence.file.FileNumberLogRepository
 import java.io.File
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
-class FileNumberLogRepositoryTest {
+class LogNumberRepositoryTest {
 
     private lateinit var file: File
     @BeforeEach
@@ -30,9 +29,9 @@ class FileNumberLogRepositoryTest {
             file.createNewFile()
         }
         val number = NumberGenerator.generateRandomNumber()
-        val repository = FileNumberLogRepository(file)
+        val repository = LogNumberRepository(file)
 
-        repository.writeNumberInLog(number)
+        repository.write(number)
 
         assertContains(file.readText(), number.toString())
     }
@@ -41,10 +40,10 @@ class FileNumberLogRepositoryTest {
     fun `write multiple numbers number in file provided in constructor`() = runTest {
         val number = NumberGenerator.generateRandomNumber()
         val number2 = NumberGenerator.generateRandomNumber()
-        val repository = FileNumberLogRepository(file)
+        val repository = LogNumberRepository(file)
 
-        repository.writeNumberInLog(number)
-        repository.writeNumberInLog(number2)
+        repository.write(number)
+        repository.write(number2)
 
         assertEquals("$number\n$number2\n", file.readText())
     }

@@ -1,7 +1,7 @@
 import http.ConcurrentHttpServer
 import http.client.ClientActionHandler
 import report.Scheduler
-import output.persistence.file.FileNumberLogRepository
+import output.persistence.log.LogNumberRepository
 import output.persistence.memory.MemoryNumberHistoryRepository
 import output.persistence.memory.MemoryReportHistoryRepository
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -18,7 +18,7 @@ import kotlin.system.exitProcess
 fun main() {
     val numberHistoryRepository = MemoryNumberHistoryRepository()
     val numberReportHistoryRepository = MemoryReportHistoryRepository()
-    val logRepository = FileNumberLogRepository.generateForPath(
+    val logRepository = LogNumberRepository.generateForPath(
         "${System.getProperty("user.dir")}/log/numbers.log"
     )
     Scheduler(
